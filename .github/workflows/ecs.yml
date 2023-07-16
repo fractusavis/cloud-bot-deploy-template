@@ -71,7 +71,9 @@ jobs:
       - name: Deploy to Amazon ECS
         env:
           SUBNETS: ${{ steps.describe-subnets.outputs.subnets }}
-          BOT_IMAGE: ${{ steps.build-bot-image.outputs.image }}
-          FLUENT_BIT_IMAGE: ${{ steps.build-fluent-bit-image.outputs.image }}
+          BOT_IMAGE: ${{ steps.build-bot-image.outputs.bot_image }}
+          FLUENT_BIT_IMAGE: ${{ steps.build-fluent-bit-image.outputs.fluent_bit_image }}
         run: |
-          ecspresso deploy --no-wait
+          echo -e "BOT_IMAGE=$BOT_IMAGE\nFLUENT_BIT_IMAGE=$FLUENT_BIT_IMAGE\nBOT_NAME=$BOT_NAME\nFLUENT_BIT_NAME=$FLUENT_BIT_NAME" > envfile
+          cat envfile
+          ecspresso deploy --envfile envfile --no-wait
