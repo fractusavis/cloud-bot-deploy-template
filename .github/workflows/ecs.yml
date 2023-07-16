@@ -2,13 +2,14 @@ name: Deploy to Amazon ECS
 
 on:
   push:
-    branches: [ main ]
+    branches: [ feature-fluentbit-s3 ]
   workflow_dispatch:
 
 env:
   AWS_REGION: ap-northeast-1
   ECS_CLUSTER: default
   BOT_NAME: monolithic_bot
+  FLUENT_BIT_NAME: fluent-bit
 
 jobs:
   deploy:
@@ -31,24 +32,33 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
 
-      - name: Create ECR repository if not exists
+      - name: Create ECR repositories if not exist
         run: |
-          if ! aws ecr describe-repositories --repository-names "$BOT_NAME" >/dev/null 2>&1; then
-            aws ecr create-repository --repository-name "$BOT_NAME"
-          fi
+          for repo in "$BOT_NAME" "$FLUENT_BIT_NAME"; do
+            if ! aws ecr describe-repositories --repository-names "$repo" >/dev/null 2>&1; then
+              aws ecr create-repository --repository-name "$repo"
+            fi
+          done
 
-      - name: Build, tag, and push image to Amazon ECR
-        id: build-image
+      - name: Build, tag, and push image for Python app to Amazon ECR
+        id: build-bot-image
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           IMAGE_TAG: ${{ github.sha }}
         run: |
-          # Build a docker container and
-          # push it to ECR so that it can
-          # be deployed to ECS.
           docker build -t $ECR_REGISTRY/$BOT_NAME:$IMAGE_TAG .
           docker push $ECR_REGISTRY/$BOT_NAME:$IMAGE_TAG
-          echo "image=$ECR_REGISTRY/$BOT_NAME:$IMAGE_TAG" >> $GITHUB_OUTPUT
+          echo "bot_image=$ECR_REGISTRY/$BOT_NAME:$IMAGE_TAG" >> $GITHUB_ENV
+
+      - name: Build, tag, and push image for Fluent Bit to Amazon ECR
+        id: build-fluent-bit-image
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          docker build -f Dockerfile.fluent-bit -t $ECR_REGISTRY/$FLUENT_BIT_NAME:$IMAGE_TAG .
+          docker push $ECR_REGISTRY/$FLUENT_BIT_NAME:$IMAGE_TAG
+          echo "fluent_bit_image=$ECR_REGISTRY/$FLUENT_BIT_NAME:$IMAGE_TAG" >> $GITHUB_ENV
 
       - name: Installs an ecspresso binary
         uses: kayac/ecspresso@v2
@@ -56,11 +66,13 @@ jobs:
       - name: Describes default subnet for the Availability Zone
         id: describe-subnets
         run: |
-          echo "subnets=$(aws ec2 describe-subnets --filters Name=default-for-az,Values=true --query Subnets[].SubnetId --output text | sed 's/\t/","/g')" >> $GITHUB_OUTPUT
+          echo "subnets=$(aws ec2 describe-subnets --filters Name=default-for-az,Values=true --query Subnets[].SubnetId --output text | sed 's/\t/","/g')" >> $GITHUB_ENV
 
       - name: Deploy to Amazon ECS
         env:
           SUBNETS: ${{ steps.describe-subnets.outputs.subnets }}
-          IMAGE: ${{ steps.build-image.outputs.image }}
+          BOT_IMAGE: ${{ steps.build-bot-image.outputs.bot_image }}
+          FLUENT_BIT_IMAGE: ${{ steps.build-fluent-bit-image.outputs.fluent_bit_image }}
         run: |
-          ecspresso deploy --no-wait
+          echo -e "BOT_IMAGE=$BOT_IMAGE\nFLUENT_BIT_IMAGE=$FLUENT_BIT_IMAGE" > envfile
+          ecspresso deploy --envfile envfile --no-wait
