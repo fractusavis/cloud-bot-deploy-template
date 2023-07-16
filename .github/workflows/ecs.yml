@@ -74,5 +74,4 @@ jobs:
           BOT_IMAGE: ${{ steps.build-bot-image.outputs.bot_image }}
           FLUENT_BIT_IMAGE: ${{ steps.build-fluent-bit-image.outputs.fluent_bit_image }}
         run: |
-          echo -e "BOT_IMAGE=$BOT_IMAGE\nFLUENT_BIT_IMAGE=$FLUENT_BIT_IMAGE\nBOT_NAME=$BOT_NAME\nFLUENT_BIT_NAME=$FLUENT_BIT_NAME" > envfile
-          ecspresso deploy --envfile envfile --no-wait
+          ecspresso deploy --no-wait
