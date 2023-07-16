@@ -48,7 +48,7 @@ jobs:
         run: |
           docker build -t $ECR_REGISTRY/$BOT_NAME:$IMAGE_TAG .
           docker push $ECR_REGISTRY/$BOT_NAME:$IMAGE_TAG
-          echo "bot_image=$ECR_REGISTRY/$BOT_NAME:$IMAGE_TAG" >> $GITHUB_ENV
+          echo "bot_image=$ECR_REGISTRY/$BOT_NAME:$IMAGE_TAG" >> $GITHUB_OUTPUT
 
       - name: Build, tag, and push image for Fluent Bit to Amazon ECR
         id: build-fluent-bit-image
@@ -58,7 +58,7 @@ jobs:
         run: |
           docker build -f Dockerfile.fluent-bit -t $ECR_REGISTRY/$FLUENT_BIT_NAME:$IMAGE_TAG .
           docker push $ECR_REGISTRY/$FLUENT_BIT_NAME:$IMAGE_TAG
-          echo "fluent_bit_image=$ECR_REGISTRY/$FLUENT_BIT_NAME:$IMAGE_TAG" >> $GITHUB_ENV
+          echo "fluent_bit_image=$ECR_REGISTRY/$FLUENT_BIT_NAME:$IMAGE_TAG" >> $GITHUB_OUTPUT
 
       - name: Installs an ecspresso binary
         uses: kayac/ecspresso@v2
@@ -66,7 +66,7 @@ jobs:
       - name: Describes default subnet for the Availability Zone
         id: describe-subnets
         run: |
-          echo "subnets=$(aws ec2 describe-subnets --filters Name=default-for-az,Values=true --query Subnets[].SubnetId --output text | sed 's/\t/","/g')" >> $GITHUB_ENV
+          echo "subnets=$(aws ec2 describe-subnets --filters Name=default-for-az,Values=true --query Subnets[].SubnetId --output text | sed 's/\t/","/g')" >> $GITHUB_OUTPUT
 
       - name: Deploy to Amazon ECS
         env:
@@ -76,5 +76,4 @@ jobs:
         run: |
           echo -e "BOT_IMAGE=$BOT_IMAGE\nFLUENT_BIT_IMAGE=$FLUENT_BIT_IMAGE\nBOT_NAME=$BOT_NAME\nFLUENT_BIT_NAME=$FLUENT_BIT_NAME" > envfile
           cat envfile
-          cat "$GITHUB_ENV"
           ecspresso deploy --envfile envfile --no-wait
