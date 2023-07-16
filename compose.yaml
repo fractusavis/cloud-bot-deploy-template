@@ -1,0 +1,17 @@
+services:
+  function_bot:
+    build:
+      context: .
+      args:
+        - PACKAGE_NAME=cloud-bot-deploy-template
+    command: [ "function_bot" ]
+    image: ${ECR_REGISTRY}/function_bot
+    restart: on-failure
+  monolithic_bot:
+    build:
+      context: .
+      args:
+        - PACKAGE_NAME=cloud-bot-deploy-template
+    command: [ "monolithic_bot" ]
+    image: ${ECR_REGISTRY}/monolithic_bot
+    restart: unless-stopped
