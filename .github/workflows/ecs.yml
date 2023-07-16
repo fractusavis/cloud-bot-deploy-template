@@ -76,5 +76,5 @@ jobs:
         run: |
           echo -e "BOT_IMAGE=$BOT_IMAGE\nFLUENT_BIT_IMAGE=$FLUENT_BIT_IMAGE\nBOT_NAME=$BOT_NAME\nFLUENT_BIT_NAME=$FLUENT_BIT_NAME" > envfile
           cat envfile
-          echo "$GITHUB_ENV"
+          cat "$GITHUB_ENV"
           ecspresso deploy --envfile envfile --no-wait
