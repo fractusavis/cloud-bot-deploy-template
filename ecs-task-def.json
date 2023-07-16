@@ -35,6 +35,7 @@
           "awslogs-stream-prefix": "ecs"
         }
       },
+      "name": "{{ must_env `FLUENT_BIT_NAME` }}",
       "firelensConfiguration": {
         "type": "fluentbit",
         "options": null
