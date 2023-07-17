@@ -45,7 +45,7 @@
   "executionRoleArn": "ecsTaskExecutionRole",
   "family": "{{ must_env `BOT_NAME` }}",
   "ipcMode": "",
-  "memory": "512",
+  "memory": "2048",
   "networkMode": "awsvpc",
   "pidMode": "",
   "requiresCompatibilities": [
