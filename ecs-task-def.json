@@ -15,7 +15,7 @@
     },
     {
       "command": [
-        "{{ must_env `FLUENT_BIT_NAME` }}"
+        "/fluent-bit/bin/fluent-bit -c /fluent-bit/etc/fluent-bit.conf"
       ],
       "cpu": 0,
       "essential": true,
