@@ -11,9 +11,17 @@
         "logDriver": "awsfirelens",
         "options": null
       },
-      "name": "{{ must_env `BOT_NAME` }}"
+      "name": "{{ must_env `BOT_NAME` }}",
+      "mountPoints": [],
+      "portMappings": [],
+      "volumesFrom": []
     },
     {
+      "command": [
+        "/fluent-bit/bin/fluent-bit",
+        "-c",
+        "/fluent-bit/etc/fluent-bit.conf"
+      ],
       "cpu": 0,
       "essential": true,
       "image": "{{ must_env `FLUENT_BIT_IMAGE` }}",
@@ -27,6 +35,9 @@
         }
       },
       "name": "{{ must_env `FLUENT_BIT_NAME` }}",
+      "mountPoints": [],
+      "portMappings": [],
+      "volumesFrom": [],
       "firelensConfiguration": {
         "type": "fluentbit",
         "options": {
