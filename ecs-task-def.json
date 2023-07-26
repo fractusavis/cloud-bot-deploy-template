@@ -14,7 +14,8 @@
       "name": "{{ must_env `BOT_NAME` }}",
       "mountPoints": [],
       "portMappings": [],
-      "volumesFrom": []
+      "volumesFrom": [],
+      "environment": []
     },
     {
       "cpu": 0,
@@ -33,6 +34,7 @@
       "mountPoints": [],
       "portMappings": [],
       "volumesFrom": [],
+      "environment": [],
       "user": "0",
       "firelensConfiguration": {
         "type": "fluentbit",
