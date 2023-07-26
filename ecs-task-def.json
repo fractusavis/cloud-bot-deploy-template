@@ -6,12 +6,6 @@
       ],
       "cpu": 0,
       "essential": true,
-      "dependsOn": [
-        {
-          "containerName": "{{ must_env `FLUENT_BIT_NAME` }}",
-          "condition": "START"
-        }
-      ],
       "image": "{{ must_env `BOT_IMAGE` }}",
       "logConfiguration": {
         "logDriver": "awsfirelens",
@@ -23,11 +17,6 @@
       "volumesFrom": []
     },
     {
-      "command": [
-        "/fluent-bit/bin/fluent-bit",
-        "-c",
-        "/fluent-bit/etc/fluent-bit.conf"
-      ],
       "cpu": 0,
       "essential": true,
       "image": "{{ must_env `FLUENT_BIT_IMAGE` }}",
@@ -37,13 +26,14 @@
           "awslogs-create-group": "true",
           "awslogs-group": "/ecs/{{ must_env `FLUENT_BIT_NAME` }}",
           "awslogs-region": "ap-northeast-1",
-          "awslogs-stream-prefix": "fluent-bit"
+          "awslogs-stream-prefix": "firelens"
         }
       },
       "name": "{{ must_env `FLUENT_BIT_NAME` }}",
       "mountPoints": [],
       "portMappings": [],
       "volumesFrom": [],
+      "user": 0,
       "firelensConfiguration": {
         "type": "fluentbit",
         "options": {
@@ -54,12 +44,11 @@
     }
   ],
   "cpu": "256",
+  "taskRoleArn": "ecsTaskRole",
   "executionRoleArn": "ecsTaskExecutionRole",
   "family": "{{ must_env `BOT_NAME` }}",
-  "ipcMode": "",
   "memory": "512",
   "networkMode": "awsvpc",
-  "pidMode": "",
   "requiresCompatibilities": [
     "FARGATE"
   ],
