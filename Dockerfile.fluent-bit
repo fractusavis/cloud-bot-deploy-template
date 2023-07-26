@@ -2,7 +2,7 @@
 FROM public.ecr.aws/aws-observability/aws-for-fluent-bit:stable
 
 # Copy fluent-bit configuration
-COPY ./fluent-bit.conf /fluent-bit/etc/fluent-bit.conf
+COPY ./fluent-bit.conf /fluent-bit/etc/custom-fluent-bit.conf
 
 # Start Fluent Bit
 # CMD ["/fluent-bit/bin/fluent-bit", "-c", "/fluent-bit/etc/fluent-bit.conf"]
