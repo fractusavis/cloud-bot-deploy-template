@@ -33,7 +33,7 @@
       "mountPoints": [],
       "portMappings": [],
       "volumesFrom": [],
-      "user": 0,
+      "user": "0",
       "firelensConfiguration": {
         "type": "fluentbit",
         "options": {
