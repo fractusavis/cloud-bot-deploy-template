@@ -36,7 +36,11 @@
       "environment": [],
       "user": "0",
       "firelensConfiguration": {
-        "type": "fluentbit"
+        "type": "fluentbit",
+        "options": {
+          "config-file-type": "file",
+          "config-file-value": "/fluent-bit/etc/fluent-bit.conf"
+        }
       }
     }
   ],
